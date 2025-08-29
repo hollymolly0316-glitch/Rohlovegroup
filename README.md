@@ -1,146 +1,101 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>크롬 공룡게임 🦖</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background: #f7f7f7;
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-      flex-direction: column;
-    }
-
-    h1 {
-      margin-bottom: 10px;
-    }
-
-    #game {
-      position: relative;
-      width: 800px;
-      height: 200px;
-      background: white;
-      border: 2px solid #555;
-      overflow: hidden;
-    }
-
-    #dino {
-      position: absolute;
-      bottom: 0;
-      left: 50px;
-      width: 44px;
-      height: 47px;
-      background: url("https://i.imgur.com/8QfS3FF.png") no-repeat center/contain; /* 작은 티라노 */
-    }
-
-    .cactus {
-      position: absolute;
-      bottom: 0;
-      width: 20px;
-      height: 40px;
-      background: green;
-    }
-
-    #score {
-      margin-top: 10px;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>무한열차 - WASD+마우스 전투</title>
+<style>
+body {margin:0; background:#111; color:white; font-family:Arial, sans-serif; display:flex; flex-direction:column; align-items:center;}
+h1 {margin:10px; font-size:2rem; text-shadow:2px 2px 4px black;}
+canvas {border:3px solid white; background:#222;}
+#hp {margin-top:10px; font-size:1.3rem;}
+</style>
 </head>
 <body>
-  <h1>🦖 크롬 공룡게임</h1>
-  <div id="game">
-    <div id="dino"></div>
-  </div>
-  <div id="score">점수: 0</div>
+<h1>🔥 무한열차 - WASD + 마우스</h1>
+<canvas id="gameCanvas" width="2000" height="800"></canvas>
+<div id="hp">체력: ❤️❤️❤️❤️❤️ (5/5)</div>
 
-  <script>
-    const dino = document.getElementById("dino");
-    const game = document.getElementById("game");
-    const scoreDisplay = document.getElementById("score");
+<script>
+const canvas=document.getElementById("gameCanvas");
+const ctx=canvas.getContext("2d");
 
-    let isJumping = false;
-    let jumpHeight = 0;
-    let gravity = 2.6; // 기존 2 → 1.3배 빠르게 (점프/낙하 속도)
-    let score = 0;
-    let gameOver = false;
+const rengoku={x:150, y:700, width:60, height:90, hp:5, defense:false};
+const akaza={x:1800, y:700, width:60, height:90, hp:5};
+const fireballs=[];
+const akazaAttacks=[];
+let gameOver=false;
 
-    // 점프
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" && !isJumping) {
-        isJumping = true;
-        jump();
-      }
-    });
+const keys={};
 
-    function jump() {
-      let upInterval = setInterval(() => {
-        if (jumpHeight >= 100) {
-          clearInterval(upInterval);
+document.addEventListener("keydown", e=>{ keys[e.key.toLowerCase()]=true; });
+document.addEventListener("keyup", e=>{ keys[e.key.toLowerCase()]=false; });
 
-          // 내려오기
-          let downInterval = setInterval(() => {
-            if (jumpHeight <= 0) {
-              clearInterval(downInterval);
-              isJumping = false;
-            }
-            jumpHeight -= gravity;
-            dino.style.bottom = jumpHeight + "px";
-          }, 20);
-        }
-        jumpHeight += gravity;
-        dino.style.bottom = jumpHeight + "px";
-      }, 20);
+canvas.addEventListener("mousedown", e=>{
+  if(e.button===0){ // 좌클릭 공격
+    fireballs.push({x:rengoku.x+rengoku.width, y:rengoku.y+20, width:30, height:30, type:"attack"});
+  } else if(e.button===2){ // 우클릭 방어막
+    rengoku.defense=true;
+    setTimeout(()=>rengoku.defense=false,300);
+  }
+});
+
+canvas.addEventListener("contextmenu", e=>e.preventDefault()); // 우클릭 메뉴 제거
+
+// 아카자 AI
+function akazaAI(){
+  if(gameOver) return;
+  const r=Math.random();
+  if(r<0.33) akazaAttacks.push({x:akaza.x, y:akaza.y+30, width:25, height:25, type:"ranged"});
+  else if(r<0.66) akazaAttacks.push({x:akaza.x-50, y:akaza.y, width:50, height:50, type:"melee"});
+  else akazaAttacks.push({x:akaza.x, y:akaza.y, width:35, height:35, type:"special"});
+  setTimeout(akazaAI, Math.random()*2000+1000);
+}
+akazaAI();
+
+function drawCharacter(char,color){ ctx.fillStyle=color; ctx.fillRect(char.x,char.y,char.width,char.height); }
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // 이동
+  const speed=8;
+  if(keys['w']) rengoku.y=Math.max(0,rengoku.y-speed);
+  if(keys['s']) rengoku.y=Math.min(canvas.height-rengoku.height,rengoku.y+speed);
+  if(keys['a']) rengoku.x=Math.max(0,rengoku.x-speed);
+  if(keys['d']) rengoku.x=Math.min(canvas.width-rengoku.width,rengoku.x+speed);
+
+  // 캐릭터
+  drawCharacter(rengoku,rengoku.defense?"#FFD700":"#FF4500");
+  drawCharacter(akaza,"#00FFFF");
+
+  // 공격
+  fireballs.forEach((f,i)=>{
+    ctx.fillStyle="#FF8C00";
+    ctx.fillRect(f.x,f.y,f.width,f.height);
+    f.x += 15;
+    if(f.x>=akaza.x && f.x<=akaza.x+akaza.width && f.y+f.height>=akaza.y && f.y<=akaza.y+akaza.height){
+      fireballs.splice(i,1); akaza.hp--; 
+      if(akaza.hp<=0){ gameOver=true; alert("렌고쿠 승리!"); }
     }
+    if(f.x>canvas.width) fireballs.splice(i,1);
+  });
 
-    // 선인장 생성
-    function createCactus() {
-      if (gameOver) return;
-      let cactus = document.createElement("div");
-      cactus.classList.add("cactus");
-      cactus.style.left = "800px";
-      game.appendChild(cactus);
-
-      let moveInterval = setInterval(() => {
-        if (gameOver) {
-          clearInterval(moveInterval);
-          cactus.remove();
-          return;
-        }
-
-        let cactusLeft = parseInt(window.getComputedStyle(cactus).getPropertyValue("left"));
-        let dinoBottom = parseInt(window.getComputedStyle(dino).getPropertyValue("bottom"));
-
-        if (cactusLeft > 40 && cactusLeft < 90 && dinoBottom < 40) {
-          clearInterval(moveInterval);
-          gameOver = true;
-          alert("게임 오버! 최종 점수: " + score);
-          return;
-        }
-
-        cactus.style.left = cactusLeft - 5 + "px";
-      }, 20);
-
-      // 다음 선인장 랜덤 생성
-      setTimeout(createCactus, Math.random() * 2000 + 1000);
+  // 아카자 공격
+  akazaAttacks.forEach((a,i)=>{
+    ctx.fillStyle=a.type==="ranged"?"cyan":a.type==="melee"?"blue":"magenta";
+    ctx.fillRect(a.x,a.y,a.width,a.height);
+    a.x -= a.type==="ranged"?10:a.type==="melee"?6:7;
+    if(a.x < rengoku.x+rengoku.width && a.x+a.width>rengoku.x && a.y+a.height>rengoku.y && a.y<rengoku.y+rengoku.height){
+      if(!rengoku.defense){ rengoku.hp--; updateHP(); akazaAttacks.splice(i,1); if(rengoku.hp<=0){ gameOver=true; alert("아카자 승리..."); } }
     }
+  });
 
-    // 점수 증가
-    function increaseScore() {
-      if (gameOver) return;
-      score++;
-      scoreDisplay.textContent = "점수: " + score;
-      setTimeout(increaseScore, 200);
-    }
+  if(!gameOver) requestAnimationFrame(draw);
+}
 
-    createCactus();
-    increaseScore();
-  </script>
+function updateHP(){ const hearts="❤️".repeat(rengoku.hp)+"🖤".repeat(5-rengoku.hp); document.getElementById("hp").innerText=`체력: ${hearts} (${rengoku.hp}/5)`;}
+
+draw();
+</script>
 </body>
 </html>
