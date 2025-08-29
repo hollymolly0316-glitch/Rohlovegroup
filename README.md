@@ -33,10 +33,9 @@
       position: absolute;
       bottom: 0;
       left: 50px;
-      width: 40px;
-      height: 40px;
-      background: #333;
-      border-radius: 4px;
+      width: 44px;
+      height: 47px;
+      background: url("https://i.imgur.com/8QfS3FF.png") no-repeat center/contain; /* 작은 티라노 */
     }
 
     .cactus {
@@ -68,7 +67,7 @@
 
     let isJumping = false;
     let jumpHeight = 0;
-    let gravity = 2;
+    let gravity = 2.6; // 기존 2 → 1.3배 빠르게 (점프/낙하 속도)
     let score = 0;
     let gameOver = false;
 
