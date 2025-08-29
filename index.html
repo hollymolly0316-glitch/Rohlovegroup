@@ -3,129 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>역사 리포터 - 제2차 세계대전</title>
+<title>노무현 소개 PPT</title>
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #222;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-
-  #reporterContainer {
-    width: 800px;
-    height: 600px;
-    background-color: #333;
-    border: 3px solid #fff;
-    border-radius: 15px;
-    padding: 20px;
-    position: relative;
-    box-shadow: 0 0 20px #000;
-  }
-
-  #slideTitle {
-    font-size: 32px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-
-  #slideContent {
-    font-size: 20px;
-    line-height: 1.6;
-  }
-
-  .navButtons {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    text-align: center;
-  }
-
-  .navButtons button {
-    background-color: #555;
-    border: none;
-    padding: 10px 20px;
-    margin: 0 20px;
-    color: #fff;
-    font-size: 18px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .navButtons button:hover {
-    background-color: #777;
-  }
+    body {
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #FFEB3B; /* 노랑 배경 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .ppt-container {
+        width: 800px;
+        height: 600px;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        overflow: hidden;
+        position: relative;
+    }
+    .slide {
+        width: 100%;
+        height: 100%;
+        display: none;
+        padding: 20px;
+        box-sizing: border-box;
+        text-align: center;
+    }
+    .slide.active {
+        display: block;
+    }
+    .slide img {
+        max-width: 300px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .controls {
+        position: absolute;
+        width: 100%;
+        bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
+    .controls button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        background-color: #1976D2;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .controls button:hover {
+        background-color: #0D47A1;
+    }
 </style>
 </head>
 <body>
-<div id="reporterContainer">
-  <div id="slideTitle">제2차 세계대전</div>
-  <div id="slideContent">게임처럼 배우는 역사 리포터입니다. 시작하려면 '다음'을 눌러주세요.</div>
-  <div class="navButtons">
-    <button id="prevBtn">◀ 이전</button>
-    <button id="nextBtn">다음 ▶</button>
-  </div>
+
+<div class="ppt-container">
+    <!-- 슬라이드 1 -->
+    <div class="slide active">
+        <h1>노무현 소개</h1>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Roh_Moo-hyun_portrait.png/440px-Roh_Moo-hyun_portrait.png" alt="노무현">
+        <p>대한민국의 제16대 대통령(2003~2008), 인권 변호사 출신.</p>
+    </div>
+
+    <!-- 슬라이드 2 -->
+    <div class="slide">
+        <h2>생애</h2>
+        <p>1946년 경상남도 김해에서 출생. 가난한 집안에서 자라난 그는 변호사가 되어 사회적 약자를 위해 활동.</p>
+    </div>
+
+    <!-- 슬라이드 3 -->
+    <div class="slide">
+        <h2>정치 활동</h2>
+        <p>대통령 재임 중 참여정부를 이끌며 국민 참여와 권력 분산을 강조, 지역감정을 극복하기 위해 노력.</p>
+    </div>
+
+    <!-- 슬라이드 4 -->
+    <div class="slide">
+        <h2>업적</h2>
+        <ul style="text-align: left; display: inline-block; margin-top: 20px;">
+            <li>권력기관 개혁</li>
+            <li>남북관계 개선 노력</li>
+            <li>국민 참여 확대 정책</li>
+            <li>정보공개법 제정</li>
+        </ul>
+    </div>
+
+    <!-- 슬라이드 5 -->
+    <div class="slide">
+        <h2>기억</h2>
+        <p>서민 대통령으로 불리며, 국민과의 소통을 중시한 지도자로 기억됨.</p>
+    </div>
+
+    <!-- 컨트롤 버튼 -->
+    <div class="controls">
+        <button id="prev">이전</button>
+        <button id="next">다음</button>
+    </div>
 </div>
 
 <script>
-  const slides = [
-    {
-      title: "제2차 세계대전의 시작",
-      content: "제2차 세계대전은 1939년 9월 1일 독일의 폴란드 침공으로 시작되었습니다. 이 전쟁은 전 세계 많은 나라들을 휘말리게 했습니다."
-    },
-    {
-      title: "주요 전쟁 국가",
-      content: "연합국: 미국, 영국, 소련 등\n추축국: 독일, 일본, 이탈리아 등"
-    },
-    {
-      title: "유럽 전선",
-      content: "독일은 빠른 전격전으로 프랑스, 벨기에, 네덜란드를 점령했습니다. 소련과의 전쟁도 벌어졌습니다."
-    },
-    {
-      title: "태평양 전선",
-      content: "일본은 아시아 지역을 침략하고 진주만 공격으로 미국과 전쟁을 벌였습니다."
-    },
-    {
-      title: "전쟁의 종결",
-      content: "1945년 5월 독일이 항복하며 유럽 전쟁이 끝났고,\n8월 일본이 항복하며 태평양 전쟁이 끝났습니다."
-    },
-    {
-      title: "전쟁의 영향",
-      content: "수천만 명의 사상자와 전 세계적인 경제적, 정치적 변화가 일어났습니다.\n국제연합(UN)이 설립되어 평화를 유지하려 노력했습니다."
-    }
-  ];
+    const slides = document.querySelectorAll('.slide');
+    let currentSlide = 0;
 
-  let currentSlide = 0;
+    document.getElementById('next').addEventListener('click', () => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+    });
 
-  const slideTitle = document.getElementById("slideTitle");
-  const slideContent = document.getElementById("slideContent");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-
-  function showSlide(index) {
-    slideTitle.textContent = slides[index].title;
-    slideContent.textContent = slides[index].content;
-  }
-
-  prevBtn.addEventListener("click", () => {
-    if(currentSlide > 0) {
-      currentSlide--;
-      showSlide(currentSlide);
-    }
-  });
-
-  nextBtn.addEventListener("click", () => {
-    if(currentSlide < slides.length - 1) {
-      currentSlide++;
-      showSlide(currentSlide);
-    }
-  });
-
-  showSlide(currentSlide);
+    document.getElementById('prev').addEventListener('click', () => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        slides[currentSlide].classList.add('active');
+    });
 </script>
+
 </body>
 </html>
