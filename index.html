@@ -3,139 +3,129 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KF21 비행기 게임</title>
+<title>역사 리포터 - 제2차 세계대전</title>
 <style>
-    body {
-        margin: 0;
-        background-color: #0a0a0a;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        color: white;
-        font-family: Arial, sans-serif;
-    }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-    #gameContainer {
-        position: relative;
-    }
+  #reporterContainer {
+    width: 800px;
+    height: 600px;
+    background-color: #333;
+    border: 3px solid #fff;
+    border-radius: 15px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 0 0 20px #000;
+  }
 
-    canvas {
-        background-color: #111;
-        border: 2px solid #fff;
-    }
+  #slideTitle {
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  #slideContent {
+    font-size: 20px;
+    line-height: 1.6;
+  }
+
+  .navButtons {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .navButtons button {
+    background-color: #555;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 20px;
+    color: #fff;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .navButtons button:hover {
+    background-color: #777;
+  }
 </style>
 </head>
 <body>
-<div id="gameContainer">
-    <canvas id="gameCanvas" width="600" height="800"></canvas>
+<div id="reporterContainer">
+  <div id="slideTitle">제2차 세계대전</div>
+  <div id="slideContent">게임처럼 배우는 역사 리포터입니다. 시작하려면 '다음'을 눌러주세요.</div>
+  <div class="navButtons">
+    <button id="prevBtn">◀ 이전</button>
+    <button id="nextBtn">다음 ▶</button>
+  </div>
 </div>
 
 <script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+  const slides = [
+    {
+      title: "제2차 세계대전의 시작",
+      content: "제2차 세계대전은 1939년 9월 1일 독일의 폴란드 침공으로 시작되었습니다. 이 전쟁은 전 세계 많은 나라들을 휘말리게 했습니다."
+    },
+    {
+      title: "주요 전쟁 국가",
+      content: "연합국: 미국, 영국, 소련 등\n추축국: 독일, 일본, 이탈리아 등"
+    },
+    {
+      title: "유럽 전선",
+      content: "독일은 빠른 전격전으로 프랑스, 벨기에, 네덜란드를 점령했습니다. 소련과의 전쟁도 벌어졌습니다."
+    },
+    {
+      title: "태평양 전선",
+      content: "일본은 아시아 지역을 침략하고 진주만 공격으로 미국과 전쟁을 벌였습니다."
+    },
+    {
+      title: "전쟁의 종결",
+      content: "1945년 5월 독일이 항복하며 유럽 전쟁이 끝났고,\n8월 일본이 항복하며 태평양 전쟁이 끝났습니다."
+    },
+    {
+      title: "전쟁의 영향",
+      content: "수천만 명의 사상자와 전 세계적인 경제적, 정치적 변화가 일어났습니다.\n국제연합(UN)이 설립되어 평화를 유지하려 노력했습니다."
+    }
+  ];
 
-const gameWidth = canvas.width;
-const gameHeight = canvas.height;
+  let currentSlide = 0;
 
-// 플레이어 (KF21)
-const player = {
-    x: gameWidth / 2 - 25,
-    y: gameHeight - 100,
-    width: 50,
-    height: 50,
-    speed: 7,
-    bullets: []
-};
+  const slideTitle = document.getElementById("slideTitle");
+  const slideContent = document.getElementById("slideContent");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
 
-// 적기
-const enemies = [];
-const enemySpeed = 3;
-let enemySpawnInterval = 2000;
+  function showSlide(index) {
+    slideTitle.textContent = slides[index].title;
+    slideContent.textContent = slides[index].content;
+  }
 
-// 키 입력
-const keys = {};
+  prevBtn.addEventListener("click", () => {
+    if(currentSlide > 0) {
+      currentSlide--;
+      showSlide(currentSlide);
+    }
+  });
 
-document.addEventListener('keydown', e => { keys[e.key] = true; });
-document.addEventListener('keyup', e => { keys[e.key] = false; });
+  nextBtn.addEventListener("click", () => {
+    if(currentSlide < slides.length - 1) {
+      currentSlide++;
+      showSlide(currentSlide);
+    }
+  });
 
-// 총알 발사
-function shoot() {
-    player.bullets.push({ x: player.x + 22, y: player.y, width: 6, height: 12, speed: 10 });
-}
-
-// 적 생성
-function spawnEnemy() {
-    const x = Math.random() * (gameWidth - 50);
-    enemies.push({ x, y: -50, width: 50, height: 50 });
-}
-
-// 충돌 체크
-function isColliding(a, b) {
-    return a.x < b.x + b.width &&
-           a.x + a.width > b.x &&
-           a.y < b.y + b.height &&
-           a.y + a.height > b.y;
-}
-
-// 게임 루프
-function update() {
-    // 플레이어 이동
-    if (keys['ArrowLeft'] && player.x > 0) player.x -= player.speed;
-    if (keys['ArrowRight'] && player.x < gameWidth - player.width) player.x += player.speed;
-    if (keys['ArrowUp'] && player.y > 0) player.y -= player.speed;
-    if (keys['ArrowDown'] && player.y < gameHeight - player.height) player.y += player.speed;
-    if (keys[' ']) shoot();
-
-    // 총알 이동
-    player.bullets.forEach((bullet, i) => {
-        bullet.y -= bullet.speed;
-        if (bullet.y < 0) player.bullets.splice(i, 1);
-    });
-
-    // 적 이동
-    enemies.forEach((enemy, i) => {
-        enemy.y += enemySpeed;
-        // 적 충돌 체크
-        player.bullets.forEach((bullet, j) => {
-            if (isColliding(bullet, enemy)) {
-                enemies.splice(i, 1);
-                player.bullets.splice(j, 1);
-            }
-        });
-        if (enemy.y > gameHeight) enemies.splice(i, 1);
-    });
-}
-
-// 게임 그리기
-function draw() {
-    ctx.clearRect(0, 0, gameWidth, gameHeight);
-
-    // 플레이어
-    ctx.fillStyle = 'blue';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-
-    // 총알
-    ctx.fillStyle = 'yellow';
-    player.bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
-
-    // 적기
-    ctx.fillStyle = 'red';
-    enemies.forEach(enemy => ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height));
-}
-
-// 게임 반복
-function gameLoop() {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-}
-
-// 적 생성 반복
-setInterval(spawnEnemy, enemySpawnInterval);
-
-// 게임 시작
-gameLoop();
+  showSlide(currentSlide);
 </script>
 </body>
 </html>
