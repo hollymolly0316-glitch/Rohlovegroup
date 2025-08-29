@@ -1,1 +1,140 @@
-# Rohlovegroup
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>지렁이 게임 🐍</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      font-family: "Arial", sans-serif;
+      color: white;
+      flex-direction: column;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2rem;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    canvas {
+      border: 4px solid #fff;
+      background: #111;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      border-radius: 10px;
+    }
+
+    #score {
+      margin-top: 10px;
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐍 지렁이 게임</h1>
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+  <div id="score">점수: 0</div>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const box = 20; // 블록 크기
+    let snake = [{ x: 9 * box, y: 10 * box }];
+    let direction;
+    let food = {
+      x: Math.floor(Math.random() * 19 + 1) * box,
+      y: Math.floor(Math.random() * 19 + 1) * box,
+    };
+    let score = 0;
+
+    // 방향키 입력
+    document.addEventListener("keydown", changeDirection);
+    function changeDirection(event) {
+      if (event.key === "ArrowLeft" && direction !== "RIGHT") {
+        direction = "LEFT";
+      } else if (event.key === "ArrowUp" && direction !== "DOWN") {
+        direction = "UP";
+      } else if (event.key === "ArrowRight" && direction !== "LEFT") {
+        direction = "RIGHT";
+      } else if (event.key === "ArrowDown" && direction !== "UP") {
+        direction = "DOWN";
+      }
+    }
+
+    function drawGame() {
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 음식
+      ctx.fillStyle = "red";
+      ctx.beginPath();
+      ctx.arc(food.x + box / 2, food.y + box / 2, box / 2 - 2, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // 지렁이
+      for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? "#4CAF50" : "#76FF03";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+
+        ctx.strokeStyle = "#111";
+        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+      }
+
+      // 머리 좌표
+      let snakeX = snake[0].x;
+      let snakeY = snake[0].y;
+
+      if (direction === "LEFT") snakeX -= box;
+      if (direction === "UP") snakeY -= box;
+      if (direction === "RIGHT") snakeX += box;
+      if (direction === "DOWN") snakeY += box;
+
+      // 음식 먹기
+      if (snakeX === food.x && snakeY === food.y) {
+        score++;
+        document.getElementById("score").innerText = "점수: " + score;
+        food = {
+          x: Math.floor(Math.random() * 19 + 1) * box,
+          y: Math.floor(Math.random() * 19 + 1) * box,
+        };
+      } else {
+        snake.pop();
+      }
+
+      // 새로운 머리
+      const newHead = { x: snakeX, y: snakeY };
+
+      // 게임 오버 조건
+      if (
+        snakeX < 0 ||
+        snakeY < 0 ||
+        snakeX >= canvas.width ||
+        snakeY >= canvas.height ||
+        collision(newHead, snake)
+      ) {
+        clearInterval(game);
+        alert("게임 오버! 최종 점수: " + score);
+      }
+
+      snake.unshift(newHead);
+    }
+
+    function collision(head, array) {
+      for (let i = 0; i < array.length; i++) {
+        if (head.x === array[i].x && head.y === array[i].y) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    let game = setInterval(drawGame, 120);
+  </script>
+</body>
+</html>
